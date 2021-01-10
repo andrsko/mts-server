@@ -10,7 +10,6 @@ class Tag(Model):
 
 class Video(Model):
     url = URLField()
-    duration = IntegerField()
     tags = ManyToManyField(Tag)
 
     def __str__(self):

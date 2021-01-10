@@ -1,6 +1,7 @@
 from django.apps import AppConfig
 from django.core.cache import cache
 import sched, time, json, random, threading
+from . import yt_api
 
 # on server start:
 #   recurse schedule for every channel:
@@ -22,20 +23,24 @@ def set_current_video(channel):
     random_tag = channel_tags[random_tag_index]
 
     # get random video
-    random_video_index = random.randint(0, videos_by_tag[random_tag].count() - 1)
-    random_video = videos_by_tag[random_tag][random_video_index]
+    random_video_duration = 0
+    while not random_video_duration:
+        random_video_index = random.randint(0, videos_by_tag[random_tag].count() - 1)
+        random_video = videos_by_tag[random_tag][random_video_index]
+        random_video_yt_id = random_video.url[-11:]
+        random_video_duration = yt_api.get_video_duration(random_video_yt_id)
 
     # store current video info in cache
     cache.set(
         channel.id,
-        json.dumps({"id": random_video.url[-11:], "started_at": time.time()}),
+        json.dumps({"id": random_video_yt_id, "started_at": time.time()}),
     )
 
     # store current video duration to check for expiration on server restart
-    cache.set(str(channel.id) + "_video_duration", random_video.duration)
+    cache.set(str(channel.id) + "_video_duration", random_video_duration)
 
     # schedule refreshing
-    s.enter(random_video.duration, 1, set_current_video, (channel,))
+    s.enter(random_video_duration, 1, set_current_video, (channel,))
 
 
 # set current videos, schedule refreshing
