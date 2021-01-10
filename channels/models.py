@@ -1,5 +1,7 @@
 from django.db.models import Model, URLField, IntegerField, ManyToManyField, CharField
 
+from . import yt_api
+
 
 class Tag(Model):
     name = CharField(max_length=50)
@@ -13,7 +15,10 @@ class Video(Model):
     tags = ManyToManyField(Tag)
 
     def __str__(self):
-        return self.url
+        return yt_api.get_video_title(self.get_yt_id())
+
+    def get_yt_id(self):
+        return self.url[-11:]
 
 
 class Channel(Model):

@@ -27,7 +27,7 @@ def set_current_video(channel):
     while not random_video_duration:
         random_video_index = random.randint(0, videos_by_tag[random_tag].count() - 1)
         random_video = videos_by_tag[random_tag][random_video_index]
-        random_video_yt_id = random_video.url[-11:]
+        random_video_yt_id = random_video.get_yt_id()
         random_video_duration = yt_api.get_video_duration(random_video_yt_id)
 
     # store current video info in cache

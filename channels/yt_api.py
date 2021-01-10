@@ -2,24 +2,36 @@ import os, re, json
 import urllib.request
 import urllib.parse
 
+API_KEY = os.environ.get("YT_API_KEY")
 
-def get_video_duration(video_id):
-    API_KEY = os.environ.get("YT_API_KEY")
-    params = {"id": video_id, "key": API_KEY, "part": "contentDetails"}
-    api_url = "https://youtube.googleapis.com/youtube/v3/videos"
 
+def _fetch_json(url, params):
     query_string = urllib.parse.urlencode(params)
-    api_video_url = api_url + "?" + query_string
+    url = url + "?" + query_string
 
-    with urllib.request.urlopen(api_video_url) as response:
+    with urllib.request.urlopen(url) as response:
         response_contents = response.read()
         data = json.loads(response_contents.decode())
 
-    duration = 0
-    if data["items"] != []:
-        duration = _YTDurationToSeconds(data["items"][0]["contentDetails"]["duration"])
+    return data
 
-    return duration
+
+def _get_video_data(id, part):
+    params = {"id": id, "key": API_KEY, "part": part}
+    api_url = "https://youtube.googleapis.com/youtube/v3/videos"
+    data = _fetch_json(api_url, params)
+    if data["items"] != []:
+        return data
+    else:
+        return None
+
+
+def get_video_duration(id):
+    data = _get_video_data(id, "contentDetails")
+    if data:
+        return _YTDurationToSeconds(data["items"][0]["contentDetails"]["duration"])
+    else:
+        return 0
 
 
 def _YTDurationToSeconds(duration):
@@ -28,3 +40,11 @@ def _YTDurationToSeconds(duration):
     minutes = int(match[1][:-1]) if match[1] else 0
     seconds = int(match[2][:-1]) if match[2] else 0
     return hours * 3600 + minutes * 60 + seconds
+
+
+def get_video_title(id):
+    data = _get_video_data(id, "snippet")
+    if data:
+        return data["items"][0]["snippet"]["title"]
+    else:
+        return "Not Found"
