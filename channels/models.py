@@ -11,7 +11,7 @@ class Tag(Model):
 
 
 class Video(Model):
-    url = URLField()
+    url = URLField(unique=True)
     tags = ManyToManyField(Tag)
 
     def __str__(self):
