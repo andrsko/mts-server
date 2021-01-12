@@ -4,7 +4,7 @@ from .models import Tag, YTChannel, Video, Channel
 
 
 class VideoAdmin(admin.ModelAdmin):
-    list_filter = ("yt_channel",)
+    list_filter = ("yt_channel", "tags")
 
 
 admin.site.register(Tag)
