@@ -36,8 +36,27 @@ class Video(Model):
         return self.title
 
     def save(self, *args, **kwargs):
-        # fetch video title with YT API
+        # fetch video info with YT API
         self.title = yt_api.get_video_title(self.get_yt_id())
+        yt_channel_data = yt_api.get_video_channel(self.get_yt_id())
+
+        # assign yt channel
+        if yt_channel_data:
+            yt_channel_url = "https://www.youtube.com/channel/" + yt_channel_data["id"]
+            yt_channel_title = yt_channel_data["title"]
+        else:
+            yt_channel_url = "https://www.youtube.com"
+            yt_channel_title = "Not Found"
+
+        try:
+            yt_channel = YTChannel.objects.get(url=yt_channel_url)
+        except YTChannel.DoesNotExist:
+            yt_channel = YTChannel.objects.create(
+                url=yt_channel_url, title=yt_channel_title
+            )
+
+        self.yt_channel = yt_channel
+
         super().save(*args, **kwargs)
 
     def get_yt_id(self):
