@@ -48,3 +48,12 @@ def get_video_title(id):
         return data["items"][0]["snippet"]["title"]
     else:
         return "Not Found"
+
+
+def get_video_channel(id):
+    data = _get_video_data(id, "snippet")
+    if data:
+        snippet = data["items"][0]["snippet"]
+        return {"id": snippet["channelId"], "title": snippet["channelTitle"]}
+    else:
+        return None

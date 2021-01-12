@@ -1,4 +1,12 @@
-from django.db.models import Model, URLField, IntegerField, ManyToManyField, CharField
+from django.db.models import (
+    Model,
+    URLField,
+    IntegerField,
+    ManyToManyField,
+    CharField,
+    ForeignKey,
+    CASCADE,
+)
 
 from . import yt_api
 
@@ -10,10 +18,19 @@ class Tag(Model):
         return self.name
 
 
+class YTChannel(Model):
+    url = URLField(unique=True)
+    title = CharField(max_length=70, blank=True)
+
+    def __str__(self):
+        return self.title
+
+
 class Video(Model):
     url = URLField(unique=True)
     tags = ManyToManyField(Tag)
     title = CharField(max_length=100, blank=True)
+    yt_channel = ForeignKey(YTChannel, on_delete=CASCADE, blank=True)
 
     def __str__(self):
         return self.title
