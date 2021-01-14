@@ -58,7 +58,7 @@ def set_current_video(channel):
         else:
             random_video_yt_id = get_playlist_video_id(random_tag, random_video_index)
 
-        if random_video_yt_id:
+        if random_video_yt_id and yt_api.is_video_embeddable(random_video_yt_id):
             random_video_duration = yt_api.get_video_duration(random_video_yt_id)
 
     # store current video info in cache

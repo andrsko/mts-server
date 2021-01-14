@@ -48,6 +48,14 @@ def _YTDurationToSeconds(duration):
     return hours * 3600 + minutes * 60 + seconds
 
 
+def is_video_embeddable(id):
+    data = _get_data("videos", id, "status")
+    if data:
+        return data["items"][0]["status"]["embeddable"]
+    else:
+        return None
+
+
 def get_video_title(id):
     data = _get_data("videos", id, "snippet")
     if data:

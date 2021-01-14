@@ -7,6 +7,7 @@ from django.db.models import (
     ForeignKey,
     CASCADE,
 )
+from django.core.exceptions import ValidationError
 
 from . import yt_api
 
@@ -36,6 +37,10 @@ class Video(Model):
 
     def __str__(self):
         return self.title
+
+    def clean(self):
+        if not yt_api.is_video_embeddable(self.get_yt_id()):
+            raise ValidationError("Video must be embeddable.")
 
     def save(self, *args, **kwargs):
         # fetch video info with YT API
@@ -74,6 +79,11 @@ class Playlist(Model):
 
     def __str__(self):
         return self.title
+
+    def clean(self):
+        first_video_id = yt_api.get_playlist_video_id(self.get_yt_id(), 0)
+        if not yt_api.is_video_embeddable(first_video_id):
+            raise ValidationError("Playlist videos must be embeddable.")
 
     def save(self, *args, **kwargs):
         # fetch playlist info with YT API
