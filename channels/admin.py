@@ -21,12 +21,7 @@ class PlaylistAdmin(admin.ModelAdmin):
 
 
 class ChannelAdmin(admin.ModelAdmin):
-    list_display = ("id", "get_tags")
-
-    def get_tags(self, obj):
-        return ", ".join([t.name for t in obj.tags.all()])
-
-    get_tags.short_description = "Tags"
+    list_display = ("id", "title")
 
 
 admin.site.register(Tag, TagAdmin)

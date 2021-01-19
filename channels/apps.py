@@ -110,18 +110,23 @@ class ChannelsConfig(AppConfig):
         # get contents
 
         channels = Channel.objects.all()
-        # write channel tags to cache
-        tag_names_by_channel = {}
+
+        # get channels info
+
+        channel_titles = {}
         for channel in channels:
+            # for picking videos
             tags[channel] = channel.tags.all()
             number_of_tags[channel] = len(tags[channel])
-            tag_names_by_channel[channel.id] = list(
-                tags[channel].values_list("name", flat=True)
-            )
+
+            # for providing to clients
+            channel_titles[channel.id] = channel.title
+
+        # for providing to clients
         channels_n = len(channels)
         cache.set(
             "channels",
-            json.dumps({"n": channels_n, "tags": tag_names_by_channel}),
+            json.dumps({"n": channels_n, "titles": channel_titles}),
         )
 
         # structure data to be used for scheduler

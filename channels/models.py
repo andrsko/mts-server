@@ -115,4 +115,5 @@ class Playlist(Model):
 
 
 class Channel(Model):
+    title = CharField(max_length=50)
     tags = ManyToManyField(Tag)
