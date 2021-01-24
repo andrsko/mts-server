@@ -121,7 +121,10 @@ def _get_playlist_target_video_id(id, page_token, video_index_rel_to_page):
         "pageToken": page_token,
     }
     data = _fetch_json(api_url, params)
-    return data["items"][-1]["contentDetails"]["videoId"]
+    try:
+        return data["items"][-1]["contentDetails"]["videoId"]
+    except:
+        return None
 
 
 def get_playlist_video_id(playlist_id, video_index):

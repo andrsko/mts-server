@@ -56,10 +56,16 @@ def set_current_video(channel):
             random_video = videos[random_tag][random_video_index]
             random_video_yt_id = random_video.get_yt_id()
         else:
-            random_video_yt_id = get_playlist_video_id(random_tag, random_video_index)
+            try:
+                random_video_yt_id = get_playlist_video_id(
+                    random_tag, random_video_index
+                )
+            except:
+                random_video_yt_id = 0
 
-        if random_video_yt_id and yt_api.is_video_embeddable(random_video_yt_id):
-            random_video_duration = yt_api.get_video_duration(random_video_yt_id)
+        if random_video_yt_id:
+            if yt_api.is_video_embeddable(random_video_yt_id):
+                random_video_duration = yt_api.get_video_duration(random_video_yt_id)
 
     # store current video info in cache
     cache.set(
